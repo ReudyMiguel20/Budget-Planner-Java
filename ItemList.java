@@ -1,5 +1,6 @@
 package budget;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -21,6 +22,10 @@ public class ItemList {
             this.items.add(item);
             System.out.println("Purchase was added!");
         }
+    }
+
+    public void addItemFromFile(PurchasedItems item) {
+            this.items.add(item);
     }
 
     public void purchaseItem() {
@@ -332,6 +337,62 @@ public class ItemList {
             System.out.println(getOtherItems());
             System.out.printf("Total sum: $%.2f ", priceSpecificTypeItem(purchaseType.OTHER));
             System.out.println();
+        }
+    }
+
+    public String csvFormat() {
+        StringBuilder sb = new StringBuilder();
+
+        for (PurchasedItems x : this.items) {
+            sb.append(x.csv()).append("\n");
+        }
+
+        //Removing the last newline at the end of the string
+        sb.deleteCharAt(sb.length() - 1);
+        return sb.toString();
+    }
+
+    public void exportFile() {
+        try {
+            FileWriter fw = new FileWriter("purchases.txt");
+            fw.write(csvFormat() + ":" + balance);
+            fw.close();
+            System.out.println("\nPurchases were saved!\n");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (StringIndexOutOfBoundsException e) {
+            System.out.println("\nTheres nothing to save\n");
+        }
+    }
+
+    public void importFile() {
+        String line = "";
+        BufferedReader reader = null;
+
+        try {
+            reader = new BufferedReader(new FileReader("purchases.txt"));
+            while ((line = reader.readLine()) != null) {
+                String[] splitter = line.split(":");
+                String productName = splitter[0];
+                double price = Double.parseDouble(splitter[1]);
+                purchaseType typeProduct = purchaseType.valueOf(splitter[2]);
+
+
+                addItemFromFile(new PurchasedItems(productName, price, typeProduct));
+                if (splitter.length == 4) {
+                    double balance = Double.parseDouble(splitter[3]);
+                    setBalance(balance);
+                }
+            }
+            System.out.println("\nPurchases were loaded!\n");
+        }
+        catch (FileNotFoundException e) {
+            System.out.println("File not found.");
+        }
+        catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

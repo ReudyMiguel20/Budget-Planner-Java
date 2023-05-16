@@ -1,5 +1,7 @@
 package budget;
 
+import java.text.DecimalFormat;
+
 public class PurchasedItems {
 
     private String name;
@@ -41,7 +43,12 @@ public class PurchasedItems {
         return this.type;
     }
 
+    public String csv() {
+        return this.name + ":" +this.price + ":" + this.type;
+    }
+
     public String toString() {
-        return this.name + " $" + this.price;
+        DecimalFormat df = new DecimalFormat("0.00");
+        return this.name + " $" + df.format(this.price);
     }
 }

@@ -1,5 +1,6 @@
 package budget;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class UserInterface {
@@ -11,14 +12,13 @@ public class UserInterface {
         this.scanner = new Scanner(System.in);
     }
 
-    public void start() {
+    public void start() throws IOException {
         boolean userWantToExit = false;
 
         while (!userWantToExit) {
             menuCommands();
-            String userInput = scanner.nextLine();
 
-            switch (userInput) {
+            switch (scanner.nextLine()) {
                 case "1" -> {
                     this.itemList.setBalance();
                 }
@@ -30,6 +30,12 @@ public class UserInterface {
                 }
                 case "4" -> {
                     this.itemList.getBalance();
+                }
+                case "5" -> {
+                    this.itemList.exportFile();
+                }
+                case "6" -> {
+                    this.itemList.importFile();
                 }
                 case "0" -> {
                     userWantToExit = true;
@@ -46,6 +52,8 @@ public class UserInterface {
                 2) Add purchase
                 3) Show list of purchases
                 4) Balance
+                5) Save
+                6) Load
                 0) Exit""");
     }
 
