@@ -40,4 +40,8 @@ public class PurchasedItems {
     public purchaseType getType() {
         return this.type;
     }
+
+    public String toString() {
+        return this.name + " $" + this.price;
+    }
 }

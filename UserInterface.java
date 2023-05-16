@@ -23,10 +23,10 @@ public class UserInterface {
                     this.itemList.setBalance();
                 }
                 case "2" -> {
-                    this.itemList.purchaseItem();
+                    this.itemList.purchaseItemMenu();
                 }
                 case "3" -> {
-                    this.itemList.showPurchases();
+                    this.itemList.showPurchasesMenu();
                 }
                 case "4" -> {
                     this.itemList.getBalance();
@@ -48,4 +48,5 @@ public class UserInterface {
                 4) Balance
                 0) Exit""");
     }
+
 }
