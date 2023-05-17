@@ -37,6 +37,9 @@ public class UserInterface {
                 case "6" -> {
                     this.itemList.importFile();
                 }
+                case "7" -> {
+                    this.itemList.sortItemMenu();
+                }
                 case "0" -> {
                     userWantToExit = true;
                     System.out.println("\nBye!");
@@ -54,6 +57,7 @@ public class UserInterface {
                 4) Balance
                 5) Save
                 6) Load
+                7) Analyze (Sort)
                 0) Exit""");
     }
 

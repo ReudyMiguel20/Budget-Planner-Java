@@ -1,8 +1,8 @@
 package budget;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.text.DecimalFormat;
+import java.util.*;
 
 public class ItemList {
     private ArrayList<PurchasedItems> items;
@@ -25,7 +25,7 @@ public class ItemList {
     }
 
     public void addItemFromFile(PurchasedItems item) {
-            this.items.add(item);
+        this.items.add(item);
     }
 
     public void purchaseItem() {
@@ -134,6 +134,31 @@ public class ItemList {
                     showPurchases();
                 }
                 case "6" -> {
+                    exitLoop = true;
+                    System.out.println();
+                }
+            }
+        }
+
+    }
+
+    public void sortItemMenu() {
+        boolean exitLoop = false;
+
+        while (!exitLoop) {
+            printSortMenu();
+
+            switch (scanner.nextLine()) {
+                case "1" -> {
+                    sortAll();
+                }
+                case "2" -> {
+                    sortByTypeCalculations();
+                }
+                case "3" -> {
+                    sortCertainTypeMenu();
+                }
+                case "4" -> {
                     exitLoop = true;
                     System.out.println();
                 }
@@ -358,11 +383,9 @@ public class ItemList {
             fw.write(csvFormat() + ":" + balance);
             fw.close();
             System.out.println("\nPurchases were saved!\n");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        catch (StringIndexOutOfBoundsException e) {
+        } catch (StringIndexOutOfBoundsException e) {
             System.out.println("\nTheres nothing to save\n");
         }
     }
@@ -387,18 +410,173 @@ public class ItemList {
                 }
             }
             System.out.println("\nPurchases were loaded!\n");
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("File not found.");
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void sortMenu() {
+        boolean exitLoop = false;
+
+        while (!exitLoop) {
+            switch (scanner.nextLine()) {
+                case "1" -> sortAll();
+                case "2" -> sortAll();
+                case "3" -> sortCertainTypeMenu();
+            }
+        }
+    }
+
+    public void sortAll() {
+        StringBuilder sb = new StringBuilder("\nAll:\n");
+
+        if (this.items.size() == 0) {
+            System.out.println("\nThe purchase list is empty!");
+            return;
+        }
+
+        //Bubble sort algorithm to sort the items by Ascending order
+        for (int i = 0; i < this.items.size() - 1; i++) {
+            for (int j = 0; j < this.items.size() - i - 1; j++) {
+                if (this.items.get(j).getPrice() < this.items.get(j + 1).getPrice()) {
+                    PurchasedItems temp = this.items.get(j);
+                    Collections.swap(this.items, j, j + 1);
+                    this.items.set(j + 1, temp);
+                }
+            }
+        }
+
+        //Appending the items to the StringBuilder
+        for (PurchasedItems x : this.items) {
+            sb.append(x).append("\n");
+        }
+
+        //Removing the last newline from the StringBuilder
+        sb.deleteCharAt(sb.length() - 1);
+
+        //Printing the list
+        System.out.println(sb.toString());
+    }
+
+    public void sortByType() {
+        System.out.println("\nTypes:\n");
+
+    }
+
+    public void sortByTypeCalculations() {
+        HashMap<String, Double> typeItems = new HashMap<>();
+        typeItems.put("Food", getPriceTypeItems(purchaseType.FOOD));
+        typeItems.put("Clothes", getPriceTypeItems(purchaseType.CLOTHES));
+        typeItems.put("Entertainment", getPriceTypeItems(purchaseType.ENTERTAINMENT));
+        typeItems.put("Other", getPriceTypeItems(purchaseType.OTHER));
+
+        Set<Map.Entry<String, Double>> entrySet = typeItems.entrySet();
+
+        List<Map.Entry<String, Double>> list = new ArrayList<>(entrySet);
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+
+            @Override
+            public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+
+        System.out.println();
+        list.forEach(s -> {
+            DecimalFormat df = new DecimalFormat("0.00");
+            System.out.println(s.getKey() + " - $" + df.format(s.getValue()));
+        });
+
+    }
+
+    public double getPriceTypeItems(purchaseType type) {
+        double totalAmountByType = 0.00;
+
+        //Looking only for certain type items
+        for (PurchasedItems x : this.items) {
+            if (x.getType() == type) {
+                totalAmountByType += x.getPrice();
+            }
+        }
+
+        return totalAmountByType;
+    }
+
+    public void sortCertainType(purchaseType type) {
+        StringBuilder sb = new StringBuilder();
+        ArrayList<PurchasedItems> certainItems = new ArrayList<>(getCertainItems(type));
+
+        //If list is empty return and print a message
+        if (certainItems.size() == 0) {
+            System.out.println("\nThe purchase list is empty!");
+            return;
+        }
+
+        //Bubble sort algorithm to sort the items by Ascending order
+        for (int i = 0; i < certainItems.size() - 1; i++) {
+            for (int j = 0; j < certainItems.size() - i - 1; j++) {
+                if (certainItems.get(j).getType().equals(type)) {
+                    if (certainItems.get(j).getPrice() < certainItems.get(j + 1).getPrice()) {
+                        PurchasedItems temp = certainItems.get(j);
+                        Collections.swap(certainItems, j, j + 1);
+                        certainItems.set(j + 1, temp);
+                    }
+                }
+            }
+        }
+
+        //Then appending all the list into a StringBuilder to further printing
+        for (PurchasedItems x : certainItems) {
+            sb.append(x).append("\n");
+        }
+
+        //Removing the last newline
+        sb.deleteCharAt(sb.length() - 1);
+
+        //Assigning a value to a String depending on the ENUM type
+        String typeItem = "";
+        switch (type) {
+            case FOOD -> typeItem = "Food: ";
+            case CLOTHES -> typeItem = "Clothes: ";
+            case ENTERTAINMENT -> typeItem = "Entertainment: ";
+            case OTHER -> typeItem = "Other: ";
+        }
+
+        //Printing the list
+        System.out.println("\n" + typeItem);
+        System.out.println(sb.toString());
+
+    }
+
+    public List<PurchasedItems> getCertainItems(purchaseType type) {
+        ArrayList<PurchasedItems> certainItems = new ArrayList<>();
+
+        //Looking only for certain type items
+        for (PurchasedItems x : this.items) {
+            if (x.getType() == type) {
+                certainItems.add(x);
+            }
+        }
+
+        return certainItems;
+    }
+
+    public void sortCertainTypeMenu() {
+        printCertainTypeMenu();
+        switch (scanner.nextLine()) {
+            case "1" -> sortCertainType(purchaseType.FOOD);
+            case "2" -> sortCertainType(purchaseType.CLOTHES);
+            case "3" -> sortCertainType(purchaseType.ENTERTAINMENT);
+            case "4" -> sortCertainType(purchaseType.OTHER);
         }
     }
 
     public static void printAddMenuItem() {
         System.out.println("""
-                
+                                
                 Choose the type of purchase
                 1) Food
                 2) Clothes
@@ -409,7 +587,7 @@ public class ItemList {
 
     public static void printPurchaseMenu() {
         System.out.println("""
-                
+                                
                 Choose the type of purchases
                 1) Food
                 2) Clothes
@@ -417,6 +595,26 @@ public class ItemList {
                 4) Other
                 5) All
                 6) Back""");
+    }
+
+    public static void printSortMenu() {
+        System.out.println("""
+                                
+                How do you want to sort?
+                1) Sort all purchases
+                2) Sort by type
+                3) Sort certain type
+                4) Back""");
+    }
+
+    public static void printCertainTypeMenu() {
+        System.out.println("""
+                
+                Choose the type of purchase
+                1) Food
+                2) Clothes
+                3) Entertainment
+                4) Other""");
     }
 
 }
