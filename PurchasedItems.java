@@ -44,7 +44,7 @@ public class PurchasedItems {
     }
 
     public String csv() {
-        return this.name + ":" +this.price + ":" + this.type;
+        return this.name + ":" + this.price + ":" + this.type;
     }
 
     public String toString() {

@@ -1,6 +1,7 @@
 package budget;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -26,6 +27,21 @@ public class ItemList {
 
     public void addItemFromFile(PurchasedItems item) {
         this.items.add(item);
+    }
+
+    public void getBalance() {
+        System.out.println("\nBalance: $" + this.balance + "\n");
+    }
+
+    public void setBalance(double balance) {
+        this.balance = balance;
+    }
+
+    public void setBalance() {
+        System.out.println("\nEnter income:");
+        double balance = Double.parseDouble(scanner.nextLine());
+        this.balance += balance;
+        System.out.println("Income was added!\n");
     }
 
     public void purchaseItem() {
@@ -183,21 +199,6 @@ public class ItemList {
             }
         }
         return totalAmount;
-    }
-
-    public void getBalance() {
-        System.out.println("\nBalance: $" + this.balance + "\n");
-    }
-
-    public void setBalance(double balance) {
-        this.balance = balance;
-    }
-
-    public void setBalance() {
-        System.out.println("\nEnter income:");
-        double balance = Double.parseDouble(scanner.nextLine());
-        this.balance += balance;
-        System.out.println("Income was added!\n");
     }
 
     public void showPurchases() {
@@ -423,7 +424,7 @@ public class ItemList {
         while (!exitLoop) {
             switch (scanner.nextLine()) {
                 case "1" -> sortAll();
-                case "2" -> sortAll();
+                case "2" -> sortByTypeCalculations();
                 case "3" -> sortCertainTypeMenu();
             }
         }
@@ -441,9 +442,7 @@ public class ItemList {
         for (int i = 0; i < this.items.size() - 1; i++) {
             for (int j = 0; j < this.items.size() - i - 1; j++) {
                 if (this.items.get(j).getPrice() < this.items.get(j + 1).getPrice()) {
-                    PurchasedItems temp = this.items.get(j);
                     Collections.swap(this.items, j, j + 1);
-                    this.items.set(j + 1, temp);
                 }
             }
         }
@@ -458,11 +457,7 @@ public class ItemList {
 
         //Printing the list
         System.out.println(sb.toString());
-    }
-
-    public void sortByType() {
-        System.out.println("\nTypes:\n");
-
+        System.out.println("Total: $" + priceTotalItems());
     }
 
     public void sortByTypeCalculations() {
@@ -493,21 +488,25 @@ public class ItemList {
             DecimalFormat df = new DecimalFormat("0.00");
             System.out.println(s.getKey() + " - $" + df.format(s.getValue()));
         });
+        System.out.println("Total sum: $" + priceTotalItems());
 
     }
 
     public double getPriceTypeItems(purchaseType type) {
+        DecimalFormat df = new DecimalFormat("0.00");
         double totalAmountByType = 0.00;
 
-        //Looking only for certain type items
+        //Looking only for certain type items, so it can sum all the values of this certain type and return it
         for (PurchasedItems x : this.items) {
             if (x.getType() == type) {
                 totalAmountByType += x.getPrice();
             }
         }
 
-        return totalAmountByType;
+        //Converting the DecimalFormat value to Double, then returning it as '0.00' just like the pattern
+        return Double.parseDouble(df.format(totalAmountByType));
     }
+
 
     public void sortCertainType(purchaseType type) {
         StringBuilder sb = new StringBuilder();
@@ -522,13 +521,9 @@ public class ItemList {
         //Bubble sort algorithm to sort the items by Ascending order
         for (int i = 0; i < certainItems.size() - 1; i++) {
             for (int j = 0; j < certainItems.size() - i - 1; j++) {
-                if (certainItems.get(j).getType().equals(type)) {
                     if (certainItems.get(j).getPrice() < certainItems.get(j + 1).getPrice()) {
-                        PurchasedItems temp = certainItems.get(j);
                         Collections.swap(certainItems, j, j + 1);
-                        certainItems.set(j + 1, temp);
                     }
-                }
             }
         }
 
@@ -552,6 +547,8 @@ public class ItemList {
         //Printing the list
         System.out.println("\n" + typeItem);
         System.out.println(sb.toString());
+        System.out.println("Total sum: $" + getPriceTypeItems(type));
+        System.out.println();
 
     }
 
