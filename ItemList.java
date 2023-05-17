@@ -466,24 +466,28 @@ public class ItemList {
     }
 
     public void sortByTypeCalculations() {
+        //Creating new HashMap with the name and values of each type for item
         HashMap<String, Double> typeItems = new HashMap<>();
         typeItems.put("Food", getPriceTypeItems(purchaseType.FOOD));
         typeItems.put("Clothes", getPriceTypeItems(purchaseType.CLOTHES));
         typeItems.put("Entertainment", getPriceTypeItems(purchaseType.ENTERTAINMENT));
         typeItems.put("Other", getPriceTypeItems(purchaseType.OTHER));
 
+        //Get the entry set of the HashMap
         Set<Map.Entry<String, Double>> entrySet = typeItems.entrySet();
 
+        //Convert the entry set to a list for sorting
         List<Map.Entry<String, Double>> list = new ArrayList<>(entrySet);
 
+        //Sort the list based on the values in descending order
         Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
-
             @Override
             public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
                 return o2.getValue().compareTo(o1.getValue());
             }
         });
 
+        //Iterate over the sorted list and print the key-value pairs
         System.out.println();
         list.forEach(s -> {
             DecimalFormat df = new DecimalFormat("0.00");
@@ -609,7 +613,7 @@ public class ItemList {
 
     public static void printCertainTypeMenu() {
         System.out.println("""
-                
+                                
                 Choose the type of purchase
                 1) Food
                 2) Clothes
